@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Chugureti Serfer",
+    "slug": "chugureti-serfer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#f2eee6"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#f2eee6"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
