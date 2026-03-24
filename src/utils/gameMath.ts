@@ -25,12 +25,18 @@ export function getGameSpeed(elapsedSeconds: number) {
 
 export function createObstacle(id: number, lane: number, type: ObstacleType): Obstacle {
   const preset = OBSTACLE_PRESETS[type];
+  const initialY =
+    type === "car"
+      ? -Math.round(preset.height + 220)
+      : type === "pit"
+        ? -Math.round(preset.height + 320)
+        : -Math.round(preset.height + 160);
 
   return {
     id,
     lane,
     type,
-    y: -preset.height - 24,
+    y: initialY,
     width: preset.width,
     height: preset.height,
   };
@@ -62,10 +68,19 @@ export function checkCollision(
   const playerBottom = PLAYER_Y + GAME_CONFIG.playerHeight - 8;
 
   return obstacles.some((obstacle) => {
-    const obstacleLeft = getLaneLeftX(obstacle.lane, obstacle.width) + 6;
-    const obstacleRight = obstacleLeft + obstacle.width - 12;
-    const obstacleTop = obstacle.y + 6;
-    const obstacleBottom = obstacle.y + obstacle.height - 6;
+    const hitboxInset =
+      obstacle.type === "pit"
+        ? { horizontal: 1, top: 2, bottom: 1 }
+        : obstacle.type === "car"
+          ? { horizontal: 6, top: 6, bottom: 6 }
+          : { horizontal: 6, top: 6, bottom: 6 };
+
+    const obstacleLeft =
+      getLaneLeftX(obstacle.lane, obstacle.width) + hitboxInset.horizontal;
+    const obstacleRight =
+      obstacleLeft + obstacle.width - hitboxInset.horizontal * 2;
+    const obstacleTop = obstacle.y + hitboxInset.top;
+    const obstacleBottom = obstacle.y + obstacle.height - hitboxInset.bottom;
 
     const intersectsHorizontally =
       obstacleRight >= playerLeft && obstacleLeft <= playerRight;

@@ -1,5 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
-import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import { Asset } from "expo-asset";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { GameOverScreen } from "./src/components/GameOverScreen";
 import { GameScreen } from "./src/components/GameScreen";
 import { StartScreen } from "./src/components/StartScreen";
@@ -11,6 +18,26 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [session, setSession] = useState(0);
+  const [assetsReady, setAssetsReady] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    Asset.loadAsync([
+      require("./assets/prius-top-cropped.png"),
+      require("./assets/pit.png"),
+    ])
+      .catch(() => null)
+      .finally(() => {
+        if (isMounted) {
+          setAssetsReady(true);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const startGame = useCallback(() => {
     setScore(0);
@@ -43,6 +70,18 @@ export default function App() {
     );
   }, [bestScore, handleGameOver, score, screen, session, startGame]);
 
+  if (!assetsReady) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.loadingShell}>
+          <Text style={styles.loadingTitle}>Chugureti Serfer</Text>
+          <Text style={styles.loadingText}>Подгружаем улицу и спрайты...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
@@ -59,5 +98,22 @@ const styles = StyleSheet.create({
   appShell: {
     flex: 1,
     backgroundColor: "#f2eee6",
+  },
+  loadingShell: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#ecd9bd",
+    padding: 24,
+  },
+  loadingTitle: {
+    fontSize: 34,
+    fontWeight: "900",
+    color: "#4f2b1d",
+    marginBottom: 10,
+  },
+  loadingText: {
+    fontSize: 17,
+    color: "#7a5a45",
   },
 });

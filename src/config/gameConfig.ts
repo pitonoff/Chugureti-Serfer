@@ -41,22 +41,22 @@ export const PLAYER_Y =
 export const OBSTACLE_PRESETS = {
   poop: {
     type: "poop",
-    width: 34,
-    height: 28,
+    width: 52,
+    height: 42,
     color: "#7a4a2c",
     label: "💩",
   },
   pit: {
     type: "pit",
-    width: 82,
-    height: 40,
+    width: 116,
+    height: 92,
     color: "#2f3640",
     label: "",
   },
   car: {
     type: "car",
-    width: 76,
-    height: 142,
+    width: 92,
+    height: 166,
     color: "#d8573c",
     label: "🚗",
   },

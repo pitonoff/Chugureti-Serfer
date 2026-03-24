@@ -21,7 +21,6 @@ import {
   getRandomObstacleType,
   getSpawnInterval,
 } from "../utils/gameMath";
-import { LaneControls } from "./LaneControls";
 import { ObstacleView } from "./ObstacleView";
 import { PlayerAvatar } from "./PlayerAvatar";
 
@@ -30,6 +29,7 @@ type GameScreenProps = {
 };
 
 export function GameScreen({ onGameOver }: GameScreenProps) {
+  const roadPatternHeight = 640;
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [score, setScore] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -41,9 +41,10 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
   const obstacleIdRef = useRef(0);
   const gameOverTriggeredRef = useRef(false);
   const laneX = useRef(new Animated.Value(getLaneCenterX(1))).current;
-  const dragX = useRef(new Animated.Value(0)).current;
-  const dragOffsetRef = useRef(0);
   const runCycle = useRef(new Animated.Value(0)).current;
+  const actionOffsetY = useRef(new Animated.Value(0)).current;
+  const bodyScaleY = useRef(new Animated.Value(1)).current;
+  const actionLockedRef = useRef(false);
   const scoreRef = useRef(0);
 
   const currentSpeed = getGameSpeed(elapsed);
@@ -75,8 +76,6 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
     const clampedLane = Math.max(0, Math.min(GAME_CONFIG.lanes - 1, nextLane));
 
     laneRef.current = clampedLane;
-    dragOffsetRef.current = 0;
-    dragX.setValue(0);
 
     Animated.spring(laneX, {
       toValue: getLaneCenterX(clampedLane),
@@ -84,7 +83,7 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
       speed: 18,
       bounciness: 7,
     }).start();
-  }, [dragX, laneX]);
+  }, [laneX]);
 
   const moveLeft = useCallback(() => {
     moveToLane(laneRef.current - 1);
@@ -93,6 +92,80 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
   const moveRight = useCallback(() => {
     moveToLane(laneRef.current + 1);
   }, [moveToLane]);
+
+  const releaseActionLock = useCallback(() => {
+    actionLockedRef.current = false;
+  }, []);
+
+  const performJump = useCallback(() => {
+    if (actionLockedRef.current) {
+      return;
+    }
+
+    actionLockedRef.current = true;
+
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(actionOffsetY, {
+          toValue: -38,
+          duration: 130,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bodyScaleY, {
+          toValue: 1.06,
+          duration: 130,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(actionOffsetY, {
+          toValue: 0,
+          duration: 160,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bodyScaleY, {
+          toValue: 1,
+          duration: 160,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start(releaseActionLock);
+  }, [actionOffsetY, bodyScaleY, releaseActionLock]);
+
+  const performDuck = useCallback(() => {
+    if (actionLockedRef.current) {
+      return;
+    }
+
+    actionLockedRef.current = true;
+
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(actionOffsetY, {
+          toValue: 8,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bodyScaleY, {
+          toValue: 0.84,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(actionOffsetY, {
+          toValue: 0,
+          duration: 140,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bodyScaleY, {
+          toValue: 1,
+          duration: 140,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start(releaseActionLock);
+  }, [actionOffsetY, bodyScaleY, releaseActionLock]);
 
   const endGame = useCallback(
     (finalScore: number) => {
@@ -112,14 +185,14 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
     useCallback(
       (deltaSeconds, elapsedSeconds) => {
         const speed = getGameSpeed(elapsedSeconds);
-        const stripeCycle =
-          GAME_CONFIG.stripeHeight + GAME_CONFIG.stripeGap;
         const nextScore = Math.floor(
           elapsedSeconds * GAME_CONFIG.scorePerSecond,
         );
 
         setElapsed(elapsedSeconds);
-        setRoadOffset((current) => (current + speed * deltaSeconds) % stripeCycle);
+        setRoadOffset(
+          (current) => (current + speed * deltaSeconds) % roadPatternHeight,
+        );
         setScore(nextScore);
         scoreRef.current = nextScore;
 
@@ -166,7 +239,7 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
           if (
             checkCollision(
               laneRef.current,
-              dragOffsetRef.current,
+              0,
               nextObstacles,
             )
           ) {
@@ -186,43 +259,28 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, gestureState) =>
-          Math.abs(gestureState.dx) > 6 &&
-          Math.abs(gestureState.dx) > Math.abs(gestureState.dy),
-        onPanResponderMove: (_, gestureState) => {
-          const limitedOffset = Math.max(
-            -GAME_CONFIG.playerDragLimit,
-            Math.min(GAME_CONFIG.playerDragLimit, gestureState.dx * 0.3),
-          );
-
-          dragOffsetRef.current = limitedOffset;
-          dragX.setValue(limitedOffset);
-        },
+          Math.abs(gestureState.dx) > 8 || Math.abs(gestureState.dy) > 8,
         onPanResponderRelease: (_, gestureState) => {
-          if (gestureState.dx <= -GAME_CONFIG.swipeThreshold) {
-            moveLeft();
-          } else if (gestureState.dx >= GAME_CONFIG.swipeThreshold) {
-            moveRight();
+          const isHorizontalSwipe =
+            Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+
+          if (isHorizontalSwipe) {
+            if (gestureState.dx <= -GAME_CONFIG.swipeThreshold) {
+              moveLeft();
+            } else if (gestureState.dx >= GAME_CONFIG.swipeThreshold) {
+              moveRight();
+            }
           } else {
-            dragOffsetRef.current = 0;
-            Animated.spring(dragX, {
-              toValue: 0,
-              useNativeDriver: true,
-              speed: 18,
-              bounciness: 6,
-            }).start();
+            if (gestureState.dy <= -GAME_CONFIG.swipeThreshold) {
+              performJump();
+            } else if (gestureState.dy >= GAME_CONFIG.swipeThreshold) {
+              performDuck();
+            }
           }
         },
-        onPanResponderTerminate: () => {
-          dragOffsetRef.current = 0;
-          Animated.spring(dragX, {
-            toValue: 0,
-            useNativeDriver: true,
-            speed: 18,
-            bounciness: 6,
-          }).start();
-        },
+        onPanResponderTerminate: () => undefined,
       }),
-    [dragX, moveLeft, moveRight],
+    [moveLeft, moveRight, performDuck, performJump],
   );
 
   const runnerAnimationStyle = useMemo(
@@ -234,60 +292,32 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
             outputRange: [0, -8],
           }),
         },
+        { translateY: actionOffsetY },
         {
           rotate: runCycle.interpolate({
             inputRange: [0, 0.5, 1],
             outputRange: ["-2deg", "1deg", "-2deg"],
           }),
         },
+        { scaleY: bodyScaleY },
       ],
     }),
-    [runCycle],
+    [actionOffsetY, bodyScaleY, runCycle],
   );
 
-  const asphaltDetails = useMemo(() => {
-    const details = [
-      { top: 118, left: 36, width: 92, rotation: "-2deg", crackHeight: 0 },
-      { top: 284, left: 152, width: 78, rotation: "2deg", crackHeight: 18 },
-      { top: 498, left: 78, width: 102, rotation: "-1deg", crackHeight: 0 },
-    ];
-
-    return details.map((detail, index) => {
-      return (
-        <View key={index}>
-          <View
-            style={[
-              styles.asphaltPatch,
-              {
-                top: detail.top,
-                left: detail.left,
-                width: detail.width,
-                transform: [{ rotate: detail.rotation }],
-              },
-            ]}
-          />
-          {detail.crackHeight > 0 ? (
-            <View
-              style={[
-                styles.roadCrack,
-                {
-                  top: detail.top + 8,
-                  left: detail.left + detail.width * 0.4,
-                  height: detail.crackHeight,
-                  transform: [{ rotate: detail.rotation }],
-                },
-              ]}
-            />
-          ) : null}
-        </View>
-      );
-    });
-  }, []);
-
-  const oilSpills = useMemo(
+  const roadDecorations = useMemo(
     () => [
-      { top: 196, left: GAME_CONFIG.roadWidth / 2 - 20, width: 40, height: 10, rotate: "-3deg" },
-      { top: 414, left: 42, width: 34, height: 9, rotate: "4deg" },
+      { kind: "patch", top: 48, left: 34, width: 94, height: 14, rotate: "-2deg" },
+      { kind: "crack", top: 102, left: 86, width: 2, height: 34, rotate: "-7deg" },
+      { kind: "stone", top: 148, left: 164, width: 8, height: 7, rotate: "0deg" },
+      { kind: "stone", top: 186, left: 108, width: 9, height: 8, rotate: "0deg" },
+      { kind: "patch", top: 236, left: 144, width: 78, height: 12, rotate: "2deg" },
+      { kind: "crack", top: 292, left: 176, width: 2, height: 22, rotate: "6deg" },
+      { kind: "stone", top: 338, left: 54, width: 7, height: 6, rotate: "0deg" },
+      { kind: "patch", top: 392, left: 82, width: 104, height: 15, rotate: "-1deg" },
+      { kind: "stone", top: 446, left: 194, width: 9, height: 7, rotate: "0deg" },
+      { kind: "crack", top: 506, left: 114, width: 2, height: 24, rotate: "-5deg" },
+      { kind: "stone", top: 560, left: 68, width: 8, height: 7, rotate: "0deg" },
     ],
     [],
   );
@@ -402,22 +432,54 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
 
       <View style={styles.road}>
         <View style={styles.roadTexture} />
-        {asphaltDetails}
-        {oilSpills.map((spill, index) => (
-          <View
-            key={index}
-            style={[
-              styles.oilSpill,
-              {
-                top: spill.top,
-                left: spill.left,
-                width: spill.width,
-                height: spill.height,
-                transform: [{ rotate: spill.rotate }],
-              },
-            ]}
-          />
-        ))}
+        <View
+          style={[
+            styles.roadPatternLayer,
+            { top: roadOffset - roadPatternHeight, height: roadPatternHeight },
+          ]}
+        >
+          {roadDecorations.map((decoration, index) => (
+            <View
+              key={`pattern-a-${index}`}
+              style={[
+                decoration.kind === "patch" && styles.asphaltPatch,
+                decoration.kind === "crack" && styles.roadCrack,
+                decoration.kind === "stone" && styles.roadStone,
+                {
+                  top: decoration.top,
+                  left: decoration.left,
+                  width: decoration.width,
+                  height: decoration.height,
+                  transform: [{ rotate: decoration.rotate }],
+                },
+              ]}
+            />
+          ))}
+        </View>
+        <View
+          style={[
+            styles.roadPatternLayer,
+            { top: roadOffset, height: roadPatternHeight },
+          ]}
+        >
+          {roadDecorations.map((decoration, index) => (
+            <View
+              key={`pattern-b-${index}`}
+              style={[
+                decoration.kind === "patch" && styles.asphaltPatch,
+                decoration.kind === "crack" && styles.roadCrack,
+                decoration.kind === "stone" && styles.roadStone,
+                {
+                  top: decoration.top,
+                  left: decoration.left,
+                  width: decoration.width,
+                  height: decoration.height,
+                  transform: [{ rotate: decoration.rotate }],
+                },
+              ]}
+            />
+          ))}
+        </View>
         {obstacles.map((obstacle) => (
           <ObstacleView key={obstacle.id} obstacle={obstacle} />
         ))}
@@ -428,7 +490,7 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
               transform: [
                 {
                   translateX: Animated.subtract(
-                    Animated.add(laneX, dragX),
+                    laneX,
                     GAME_CONFIG.playerWidth / 2,
                   ),
                 },
@@ -454,7 +516,6 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
         </View>
       </View>
 
-      <LaneControls onMoveLeft={moveLeft} onMoveRight={moveRight} />
     </View>
   );
 }
@@ -678,6 +739,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: "#434448",
   },
+  roadPatternLayer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+  },
   asphaltPatch: {
     position: "absolute",
     height: 14,
@@ -690,10 +756,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: "rgba(20, 20, 22, 0.28)",
   },
-  oilSpill: {
+  roadStone: {
     position: "absolute",
     borderRadius: 999,
-    backgroundColor: "rgba(27, 29, 31, 0.22)",
+    backgroundColor: "rgba(90, 92, 96, 0.84)",
   },
   sideDetailLeft: {
     position: "absolute",
