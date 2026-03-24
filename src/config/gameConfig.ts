@@ -41,8 +41,8 @@ export const PLAYER_Y =
 export const OBSTACLE_PRESETS = {
   poop: {
     type: "poop",
-    width: 52,
-    height: 42,
+    width: 62,
+    height: 58,
     color: "#7a4a2c",
     label: "💩",
   },
@@ -51,6 +51,13 @@ export const OBSTACLE_PRESETS = {
     width: 116,
     height: 92,
     color: "#2f3640",
+    label: "",
+  },
+  manhole: {
+    type: "manhole",
+    width: 124,
+    height: 98,
+    color: "#595552",
     label: "",
   },
   car: {

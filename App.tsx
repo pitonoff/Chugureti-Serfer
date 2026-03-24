@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { GameOverScreen } from "./src/components/GameOverScreen";
 import { GameScreen } from "./src/components/GameScreen";
+import { PLAYER_FRAME_SOURCES } from "./src/config/playerFrames";
 import { StartScreen } from "./src/components/StartScreen";
 
 type ScreenState = "start" | "playing" | "game-over";
@@ -24,8 +25,11 @@ export default function App() {
     let isMounted = true;
 
     Asset.loadAsync([
+      ...PLAYER_FRAME_SOURCES,
       require("./assets/prius-top-cropped.png"),
-      require("./assets/pit.png"),
+      require("./assets/kal-prepped.png"),
+      require("./assets/pit-new-prepped.png"),
+      require("./assets/kolo-new-prepped.png"),
     ])
       .catch(() => null)
       .finally(() => {

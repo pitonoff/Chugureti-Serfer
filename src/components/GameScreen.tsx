@@ -500,7 +500,7 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
           ]}
         >
           <Animated.View style={runnerAnimationStyle}>
-            <PlayerAvatar runCycle={runCycle} />
+            <PlayerAvatar />
           </Animated.View>
         </Animated.View>
       </View>

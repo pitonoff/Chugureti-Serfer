@@ -1,4 +1,4 @@
-export type ObstacleType = "poop" | "pit" | "car";
+export type ObstacleType = "poop" | "pit" | "manhole" | "car";
 
 export type Obstacle = {
   id: number;
