@@ -87,8 +87,8 @@ export function getTelegramTopInset() {
     webApp.contentSafeAreaInset?.top ?? webApp.safeAreaInset?.top ?? 0;
 
   if (explicitInset > 0) {
-    return explicitInset + 56;
+    return Math.min(explicitInset, 12);
   }
 
-  return 92;
+  return 0;
 }
