@@ -22,7 +22,6 @@ export function StartScreen({
       <View style={styles.crossHorizontal} />
       <View style={styles.content}>
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>Endless runner</Text>
           <View style={styles.logoFrame}>
             <Image
               source={require("../../assets/logo-transparent-web.png")}
@@ -177,12 +176,13 @@ const styles = StyleSheet.create({
   },
   statsPanel: {
     flexDirection: "row",
+    width: "100%",
     gap: 12,
     marginBottom: 16,
   },
   bestScoreCard: {
-    flexGrow: 1,
-    flexBasis: 160,
+    flex: 1,
+    minWidth: 0,
     borderRadius: 18,
     backgroundColor: "#efe4cf",
     borderWidth: 1,
@@ -200,10 +200,12 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "800",
     color: UI_THEME.redDark,
+    textAlign: "center",
   },
   modeValue: {
     fontSize: 19,
     fontWeight: "800",
     color: UI_THEME.redDark,
+    textAlign: "center",
   },
 });
