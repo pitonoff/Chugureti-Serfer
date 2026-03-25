@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   PanResponder,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -15,6 +16,7 @@ import { BOMJ_FRAME_COUNT, BOMJ_FRAME_INTERVAL_MS } from "../config/bomjFrames";
 import { GOP_FRAME_COUNT, GOP_FRAME_INTERVAL_MS } from "../config/gopFrames";
 import { UI_THEME } from "../config/uiTheme";
 import { useGameLoop } from "../hooks/useGameLoop";
+import { getTelegramTopInset } from "../hooks/useTelegramMiniApp";
 import { Obstacle } from "../types/game";
 import {
   checkCollision,
@@ -34,6 +36,8 @@ type GameScreenProps = {
 export function GameScreen({ onGameOver }: GameScreenProps) {
   const collisionDelayMs = 320;
   const roadPatternHeight = 640;
+  const telegramTopInset =
+    Platform.OS === "web" ? getTelegramTopInset() : 0;
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [score, setScore] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -569,15 +573,22 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
         ) : null}
       </View>
 
-      <View style={styles.hud}>
-        <View style={styles.scoreCard}>
-          <Text style={styles.scoreLabel}>Очки</Text>
-          <Text style={styles.scoreValue}>{score}</Text>
-        </View>
-        <View style={styles.scoreCard}>
-          <Text style={styles.scoreLabel}>Темп</Text>
-          <Text style={styles.scoreValue}>{Math.round(currentSpeed)}</Text>
-        </View>
+      <View
+        style={[
+          styles.hud,
+          {
+            top: 16 + telegramTopInset,
+          },
+        ]}
+      >
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>Очки</Text>
+            <Text style={styles.scoreValue}>{score}</Text>
+          </View>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>Темп</Text>
+            <Text style={styles.scoreValue}>{Math.round(currentSpeed)}</Text>
+          </View>
       </View>
 
     </View>

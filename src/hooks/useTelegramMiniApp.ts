@@ -7,6 +7,18 @@ type TelegramWebApp = {
   setBackgroundColor?: (color: string) => void;
   setHeaderColor?: (color: string) => void;
   disableVerticalSwipes?: () => void;
+  safeAreaInset?: {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  };
+  contentSafeAreaInset?: {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  };
 };
 
 declare global {
@@ -58,4 +70,25 @@ export function useTelegramMiniApp() {
       isCancelled = true;
     };
   }, []);
+}
+
+export function getTelegramTopInset() {
+  if (Platform.OS !== "web" || typeof window === "undefined") {
+    return 0;
+  }
+
+  const webApp = window.Telegram?.WebApp;
+
+  if (!webApp) {
+    return 0;
+  }
+
+  const explicitInset =
+    webApp.contentSafeAreaInset?.top ?? webApp.safeAreaInset?.top ?? 0;
+
+  if (explicitInset > 0) {
+    return explicitInset + 56;
+  }
+
+  return 92;
 }
