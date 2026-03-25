@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { UI_THEME } from "../config/uiTheme";
 import { GameButton } from "./GameButton";
 
@@ -20,33 +20,39 @@ export function GameOverScreen({
       <View style={styles.topBand} />
       <View style={styles.bottomBand} />
       <View style={styles.backgroundGlow} />
-      <View style={styles.card}>
-        <Text style={styles.label}>Game Over</Text>
-        <Text style={styles.title}>Улица победила</Text>
-        <Text style={styles.subtitle}>
-          Еще один забег, и ты уже почти городской ниндзя.
-        </Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <View style={styles.card}>
+          <Text style={styles.label}>Game Over</Text>
+          <Text style={styles.title}>Улица победила</Text>
+          <Text style={styles.subtitle}>
+            Еще один забег, и ты уже почти городской ниндзя.
+          </Text>
 
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Score</Text>
-            <Text style={styles.statValue}>{score}</Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Score</Text>
+              <Text style={styles.statValue}>{score}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Best</Text>
+              <Text style={styles.statValue}>{bestScore}</Text>
+            </View>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Best</Text>
-            <Text style={styles.statValue}>{bestScore}</Text>
+
+          <View style={styles.buttons}>
+            <GameButton label="Restart" onPress={onRestart} />
+            <GameButton
+              label="Menu"
+              onPress={onBackToMenu}
+              variant="secondary"
+            />
           </View>
         </View>
-
-        <View style={styles.buttons}>
-          <GameButton label="Restart" onPress={onRestart} />
-          <GameButton
-            label="Menu"
-            onPress={onBackToMenu}
-            variant="secondary"
-          />
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -55,9 +61,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: UI_THEME.parchment,
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 28,
   },
   topBand: {
     position: "absolute",
@@ -86,6 +97,7 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 420,
+    alignSelf: "center",
     backgroundColor: UI_THEME.ivory,
     borderWidth: 1,
     borderColor: UI_THEME.border,
@@ -123,12 +135,14 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 14,
     marginBottom: 26,
     alignItems: "stretch",
   },
   statCard: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: 160,
     backgroundColor: "#efe4cf",
     borderWidth: 1,
     borderColor: UI_THEME.border,

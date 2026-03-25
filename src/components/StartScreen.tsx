@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { UI_THEME } from "../config/uiTheme";
 import { GameButton } from "./GameButton";
 
@@ -20,44 +20,50 @@ export function StartScreen({
       <View style={styles.backgroundGlow} />
       <View style={styles.crossVertical} />
       <View style={styles.crossHorizontal} />
-      <View style={styles.card}>
-        <Text style={styles.eyebrow}>Endless runner</Text>
-        <View style={styles.logoFrame}>
-          <Image
-            source={require("../../assets/logo-transparent-web.png")}
-            style={styles.logo}
-            resizeMode="contain"
-            fadeDuration={0}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <View style={styles.card}>
+          <Text style={styles.eyebrow}>Endless runner</Text>
+          <View style={styles.logoFrame}>
+            <Image
+              source={require("../../assets/logo-transparent-web.png")}
+              style={styles.logo}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+          </View>
+          <Text style={styles.subtitle}>
+            Беги по улице, меняй полосу, уклоняйся от Prius, люков, ям и прочих
+            городских сюрпризов.
+          </Text>
+
+          <View style={styles.rules}>
+            <Text style={styles.rule}>3 полосы движения</Text>
+            <Text style={styles.rule}>Управление свайпами</Text>
+            <Text style={styles.rule}>Скорость растет со временем</Text>
+          </View>
+
+          <View style={styles.statsPanel}>
+            <View style={styles.bestScoreCard}>
+              <Text style={styles.bestScoreLabel}>Best score</Text>
+              <Text style={styles.bestScoreValue}>{bestScore}</Text>
+            </View>
+            <View style={styles.bestScoreCard}>
+              <Text style={styles.bestScoreLabel}>Mode</Text>
+              <Text style={styles.modeValue}>One hand</Text>
+            </View>
+          </View>
+
+          <GameButton
+            label={isPreparing ? "Подгружаем мир..." : "Play"}
+            onPress={onPlay}
+            disabled={isPreparing}
           />
         </View>
-        <Text style={styles.subtitle}>
-          Беги по улице, меняй полосу, уклоняйся от Prius, люков, ям и прочих
-          городских сюрпризов.
-        </Text>
-
-        <View style={styles.rules}>
-          <Text style={styles.rule}>3 полосы движения</Text>
-          <Text style={styles.rule}>Управление свайпами</Text>
-          <Text style={styles.rule}>Скорость растет со временем</Text>
-        </View>
-
-        <View style={styles.statsPanel}>
-          <View style={styles.bestScoreCard}>
-            <Text style={styles.bestScoreLabel}>Best score</Text>
-            <Text style={styles.bestScoreValue}>{bestScore}</Text>
-          </View>
-          <View style={styles.bestScoreCard}>
-            <Text style={styles.bestScoreLabel}>Mode</Text>
-            <Text style={styles.modeValue}>One hand</Text>
-          </View>
-        </View>
-
-        <GameButton
-          label={isPreparing ? "Подгружаем мир..." : "Play"}
-          onPress={onPlay}
-          disabled={isPreparing}
-        />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -66,9 +72,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: UI_THEME.parchment,
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 28,
   },
   topBand: {
     position: "absolute",
@@ -115,6 +126,7 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 420,
+    alignSelf: "center",
     borderRadius: 32,
     backgroundColor: UI_THEME.ivory,
     borderWidth: 1,
@@ -137,6 +149,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logoFrame: {
+    width: "100%",
     height: 164,
     alignItems: "center",
     justifyContent: "center",
@@ -169,11 +182,13 @@ const styles = StyleSheet.create({
   },
   statsPanel: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
     marginBottom: 24,
   },
   bestScoreCard: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: 160,
     borderRadius: 18,
     backgroundColor: "#efe4cf",
     borderWidth: 1,
