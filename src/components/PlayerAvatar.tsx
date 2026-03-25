@@ -6,7 +6,13 @@ import {
   PLAYER_FRAME_SOURCES,
 } from "../config/playerFrames";
  
-export const PlayerAvatar = memo(function PlayerAvatar() {
+type PlayerAvatarProps = {
+  isColliding?: boolean;
+};
+
+export const PlayerAvatar = memo(function PlayerAvatar({
+  isColliding = false,
+}: PlayerAvatarProps) {
   const [frameIndex, setFrameIndex] = useState(0);
 
   useEffect(() => {
@@ -23,13 +29,17 @@ export const PlayerAvatar = memo(function PlayerAvatar() {
     <View style={styles.container}>
       <View style={styles.character}>
         <Image
-          source={PLAYER_FRAME_SOURCES[frameIndex]}
-          style={styles.sprite}
+          source={
+            isColliding
+              ? require("../../assets/ui/col-transparent.png")
+              : PLAYER_FRAME_SOURCES[frameIndex]
+          }
+          style={[styles.sprite, isColliding && styles.collisionSprite]}
           resizeMode="contain"
           fadeDuration={0}
         />
       </View>
-      <View style={styles.shadow} />
+      {!isColliding ? <View style={styles.shadow} /> : null}
     </View>
   );
 });
@@ -47,6 +57,10 @@ const styles = StyleSheet.create({
   sprite: {
     width: "100%",
     height: "100%",
+  },
+  collisionSprite: {
+    width: "146%",
+    height: "146%",
   },
   shadow: {
     marginTop: -8,

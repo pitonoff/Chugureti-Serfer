@@ -48,8 +48,8 @@ export const OBSTACLE_PRESETS = {
   },
   pit: {
     type: "pit",
-    width: 116,
-    height: 92,
+    width: 94,
+    height: 138,
     color: "#2f3640",
     label: "",
   },
@@ -58,6 +58,13 @@ export const OBSTACLE_PRESETS = {
     width: 124,
     height: 98,
     color: "#595552",
+    label: "",
+  },
+  bomj: {
+    type: "bomj",
+    width: 132,
+    height: 76,
+    color: "#7d6a4d",
     label: "",
   },
   car: {

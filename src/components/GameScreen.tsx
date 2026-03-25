@@ -11,6 +11,9 @@ import {
   PLAYER_Y,
   ROAD_LAYOUT,
 } from "../config/gameConfig";
+import { BOMJ_FRAME_INTERVAL_MS, BOMJ_FRAME_SOURCES } from "../config/bomjFrames";
+import { GOP_FRAME_INTERVAL_MS, GOP_FRAME_SOURCES } from "../config/gopFrames";
+import { UI_THEME } from "../config/uiTheme";
 import { useGameLoop } from "../hooks/useGameLoop";
 import { Obstacle } from "../types/game";
 import {
@@ -29,12 +32,14 @@ type GameScreenProps = {
 };
 
 export function GameScreen({ onGameOver }: GameScreenProps) {
+  const collisionDelayMs = 320;
   const roadPatternHeight = 640;
   const [obstacles, setObstacles] = useState<Obstacle[]>([]);
   const [score, setScore] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [roadOffset, setRoadOffset] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
+  const [isColliding, setIsColliding] = useState(false);
 
   const laneRef = useRef(1);
   const spawnTimerRef = useRef(0);
@@ -44,8 +49,11 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
   const runCycle = useRef(new Animated.Value(0)).current;
   const actionOffsetY = useRef(new Animated.Value(0)).current;
   const bodyScaleY = useRef(new Animated.Value(1)).current;
+  const collisionFlashOpacity = useRef(new Animated.Value(0)).current;
+  const collisionBurstScale = useRef(new Animated.Value(0.78)).current;
   const actionLockedRef = useRef(false);
   const scoreRef = useRef(0);
+  const collisionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentSpeed = getGameSpeed(elapsed);
 
@@ -71,6 +79,14 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
       animation.stop();
     };
   }, [runCycle]);
+
+  useEffect(() => {
+    return () => {
+      if (collisionTimeoutRef.current) {
+        clearTimeout(collisionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const moveToLane = useCallback((nextLane: number) => {
     const clampedLane = Math.max(0, Math.min(GAME_CONFIG.lanes - 1, nextLane));
@@ -175,9 +191,27 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
 
       gameOverTriggeredRef.current = true;
       setIsRunning(false);
-      onGameOver(finalScore);
+      setIsColliding(true);
+      collisionFlashOpacity.setValue(0);
+      collisionBurstScale.setValue(0.78);
+      Animated.parallel([
+        Animated.timing(collisionFlashOpacity, {
+          toValue: 1,
+          duration: 110,
+          useNativeDriver: true,
+        }),
+        Animated.spring(collisionBurstScale, {
+          toValue: 1,
+          useNativeDriver: true,
+          speed: 18,
+          bounciness: 10,
+        }),
+      ]).start();
+      collisionTimeoutRef.current = setTimeout(() => {
+        onGameOver(finalScore);
+      }, collisionDelayMs);
     },
-    [onGameOver],
+    [collisionBurstScale, collisionFlashOpacity, onGameOver],
   );
 
   useGameLoop(
@@ -481,7 +515,12 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
           ))}
         </View>
         {obstacles.map((obstacle) => (
-          <ObstacleView key={obstacle.id} obstacle={obstacle} />
+          <ObstacleView
+            key={obstacle.id}
+            obstacle={obstacle}
+            pitAnimationFrame={Math.floor((elapsed * 1000) / GOP_FRAME_INTERVAL_MS) % GOP_FRAME_SOURCES.length}
+            bomjAnimationFrame={Math.floor((elapsed * 1000) / BOMJ_FRAME_INTERVAL_MS) % BOMJ_FRAME_SOURCES.length}
+          />
         ))}
         <Animated.View
           style={[
@@ -499,10 +538,29 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
             },
           ]}
         >
-          <Animated.View style={runnerAnimationStyle}>
-            <PlayerAvatar />
+          <Animated.View
+            style={[
+              runnerAnimationStyle,
+              isColliding && {
+                transform: [
+                  ...runnerAnimationStyle.transform,
+                  { scale: collisionBurstScale },
+                ],
+              },
+            ]}
+          >
+            <PlayerAvatar isColliding={isColliding} />
           </Animated.View>
         </Animated.View>
+        {isColliding ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.collisionOverlay,
+              { opacity: collisionFlashOpacity },
+            ]}
+          />
+        ) : null}
       </View>
 
       <View style={styles.hud}>
@@ -761,6 +819,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: "rgba(90, 92, 96, 0.84)",
   },
+  collisionOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(162, 51, 44, 0.16)",
+  },
   sideDetailLeft: {
     position: "absolute",
     left: ROAD_LAYOUT.left - 20,
@@ -818,23 +880,26 @@ const styles = StyleSheet.create({
   },
   scoreCard: {
     minWidth: 108,
-    backgroundColor: "rgba(88, 50, 28, 0.86)",
+    alignItems: "center",
+    backgroundColor: UI_THEME.hudBg,
     borderWidth: 1,
-    borderColor: "rgba(255, 232, 205, 0.2)",
+    borderColor: UI_THEME.hudBorder,
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 14,
   },
   scoreLabel: {
     fontSize: 12,
-    color: "#f0d2aa",
+    color: UI_THEME.hudLabel,
     textTransform: "uppercase",
     letterSpacing: 1.1,
     marginBottom: 6,
+    textAlign: "center",
   },
   scoreValue: {
     fontSize: 28,
     fontWeight: "900",
-    color: "#fff5e9",
+    color: UI_THEME.hudText,
+    textAlign: "center",
   },
 });

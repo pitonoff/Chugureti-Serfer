@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text } from "react-native";
+import { UI_THEME } from "../config/uiTheme";
 
 type GameButtonProps = {
   label: string;
@@ -34,6 +35,7 @@ export function GameButton({
 
 const styles = StyleSheet.create({
   button: {
+    width: "100%",
     minWidth: 146,
     borderRadius: 18,
     paddingHorizontal: 24,
@@ -42,19 +44,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   primary: {
-    backgroundColor: "#6f3f2b",
+    backgroundColor: UI_THEME.red,
     borderWidth: 1,
-    borderColor: "#91614e",
-    shadowColor: "#5a3426",
+    borderColor: UI_THEME.redDark,
+    shadowColor: UI_THEME.shadow,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.22,
     shadowRadius: 14,
     elevation: 6,
   },
   secondary: {
-    backgroundColor: "#f8ecdb",
+    backgroundColor: UI_THEME.ivory,
     borderWidth: 1,
-    borderColor: "#d9bda0",
+    borderColor: UI_THEME.border,
   },
   buttonPressed: {
     transform: [{ scale: 0.98 }],
@@ -64,9 +66,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   primaryLabel: {
-    color: "#fff4e9",
+    color: UI_THEME.hudText,
   },
   secondaryLabel: {
-    color: "#5b3829",
+    color: UI_THEME.redDark,
   },
 });

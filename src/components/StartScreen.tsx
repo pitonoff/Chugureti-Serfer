@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { UI_THEME } from "../config/uiTheme";
 import { GameButton } from "./GameButton";
 
 type StartScreenProps = {
@@ -12,30 +13,37 @@ export function StartScreen({ bestScore, onPlay }: StartScreenProps) {
       <View style={styles.topBand} />
       <View style={styles.bottomBand} />
       <View style={styles.backgroundGlow} />
+      <View style={styles.crossVertical} />
+      <View style={styles.crossHorizontal} />
       <View style={styles.card}>
-        <Text style={styles.eyebrow}>Mini endless runner</Text>
-        <Text style={styles.title}>Chugureti Serfer</Text>
-        <Text style={styles.subtitle}>
-          Беги по улице, меняй полосу и не вляпайся в неприятности.
-        </Text>
-
-        <View style={styles.previewStreet}>
-          <View style={styles.previewRoad} />
-          <View style={styles.previewSidewalkLeft} />
-          <View style={styles.previewSidewalkRight} />
-          <View style={styles.previewCar} />
-          <View style={styles.previewRunner} />
+        <Text style={styles.eyebrow}>Endless runner</Text>
+        <View style={styles.logoFrame}>
+          <Image
+            source={require("../../assets/logo-transparent.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </View>
+        <Text style={styles.subtitle}>
+          Беги по улице, меняй полосу, уклоняйся от Prius, люков, ям и прочих
+          городских сюрпризов.
+        </Text>
 
         <View style={styles.rules}>
           <Text style={styles.rule}>3 полосы движения</Text>
-          <Text style={styles.rule}>Свайп или кнопки снизу</Text>
-          <Text style={styles.rule}>Машины крупнее и опаснее</Text>
+          <Text style={styles.rule}>Управление свайпами</Text>
+          <Text style={styles.rule}>Скорость растет со временем</Text>
         </View>
 
-        <View style={styles.bestScore}>
-          <Text style={styles.bestScoreLabel}>Best score</Text>
-          <Text style={styles.bestScoreValue}>{bestScore}</Text>
+        <View style={styles.statsPanel}>
+          <View style={styles.bestScoreCard}>
+            <Text style={styles.bestScoreLabel}>Best score</Text>
+            <Text style={styles.bestScoreValue}>{bestScore}</Text>
+          </View>
+          <View style={styles.bestScoreCard}>
+            <Text style={styles.bestScoreLabel}>Mode</Text>
+            <Text style={styles.modeValue}>One hand</Text>
+          </View>
         </View>
 
         <GameButton label="Play" onPress={onPlay} />
@@ -47,7 +55,7 @@ export function StartScreen({ bestScore, onPlay }: StartScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f1d0a3",
+    backgroundColor: UI_THEME.parchment,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
@@ -58,7 +66,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 180,
-    backgroundColor: "#efb46f",
+    backgroundColor: UI_THEME.red,
   },
   bottomBand: {
     position: "absolute",
@@ -66,26 +74,44 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 220,
-    backgroundColor: "#e4c39c",
+    backgroundColor: UI_THEME.parchmentWarm,
   },
   backgroundGlow: {
     position: "absolute",
-    top: 48,
-    width: 280,
-    height: 280,
+    top: 58,
+    width: 320,
+    height: 320,
     borderRadius: 999,
-    backgroundColor: "rgba(255, 237, 195, 0.42)",
+    backgroundColor: "rgba(201, 177, 120, 0.24)",
+  },
+  crossVertical: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: "50%",
+    marginLeft: -12,
+    width: 24,
+    backgroundColor: "rgba(162, 51, 44, 0.08)",
+  },
+  crossHorizontal: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: "34%",
+    marginTop: -12,
+    height: 24,
+    backgroundColor: "rgba(162, 51, 44, 0.08)",
   },
   card: {
     width: "100%",
     maxWidth: 420,
     borderRadius: 32,
-    backgroundColor: "#fbefdf",
+    backgroundColor: UI_THEME.ivory,
     borderWidth: 1,
-    borderColor: "#d8b08b",
+    borderColor: UI_THEME.border,
     paddingHorizontal: 24,
-    paddingVertical: 34,
-    shadowColor: "#744c34",
+    paddingVertical: 28,
+    shadowColor: UI_THEME.shadow,
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.18,
     shadowRadius: 24,
@@ -94,103 +120,71 @@ const styles = StyleSheet.create({
   eyebrow: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#b55f3f",
+    color: UI_THEME.red,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     marginBottom: 12,
+    textAlign: "center",
   },
-  title: {
-    fontSize: 42,
-    fontWeight: "900",
-    color: "#4f2b1d",
-    marginBottom: 12,
+  logoFrame: {
+    height: 164,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  logo: {
+    width: "92%",
+    height: "92%",
   },
   subtitle: {
     fontSize: 17,
     lineHeight: 25,
-    color: "#7a5a45",
-    marginBottom: 20,
-  },
-  previewStreet: {
-    height: 96,
-    borderRadius: 22,
-    backgroundColor: "#edd3ae",
-    overflow: "hidden",
-    marginBottom: 24,
-  },
-  previewRoad: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: "25%",
-    right: "25%",
-    backgroundColor: "#4a4b4f",
-  },
-  previewSidewalkLeft: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: "25%",
-    backgroundColor: "#ccb18a",
-  },
-  previewSidewalkRight: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    right: 0,
-    width: "25%",
-    backgroundColor: "#ccb18a",
-  },
-  previewCar: {
-    position: "absolute",
-    top: 10,
-    left: "54%",
-    width: 34,
-    height: 56,
-    borderRadius: 12,
-    backgroundColor: "#e8e2d8",
-    borderWidth: 2,
-    borderColor: "#faf5ef",
-  },
-  previewRunner: {
-    position: "absolute",
-    bottom: 12,
-    left: "38%",
-    width: 22,
-    height: 34,
-    borderRadius: 10,
-    backgroundColor: "#1d7c62",
-    borderWidth: 2,
-    borderColor: "#d6fff6",
+    color: UI_THEME.inkSoft,
+    marginBottom: 18,
+    textAlign: "center",
   },
   rules: {
     gap: 10,
-    marginBottom: 28,
+    marginBottom: 20,
   },
   rule: {
     fontSize: 16,
-    color: "#5a3d2f",
-    backgroundColor: "#f3e1ca",
+    color: UI_THEME.ink,
+    backgroundColor: "#efe4cf",
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#e2c5a6",
+    borderColor: UI_THEME.border,
   },
-  bestScore: {
+  statsPanel: {
     flexDirection: "row",
-    alignItems: "baseline",
-    gap: 10,
+    gap: 12,
     marginBottom: 24,
+  },
+  bestScoreCard: {
+    flex: 1,
+    borderRadius: 18,
+    backgroundColor: "#efe4cf",
+    borderWidth: 1,
+    borderColor: UI_THEME.border,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    alignItems: "center",
   },
   bestScoreLabel: {
     fontSize: 15,
-    color: "#8b7058",
+    color: UI_THEME.inkSoft,
+    marginBottom: 6,
   },
   bestScoreValue: {
     fontSize: 30,
     fontWeight: "800",
-    color: "#4f2b1d",
+    color: UI_THEME.redDark,
+  },
+  modeValue: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: UI_THEME.redDark,
   },
 });

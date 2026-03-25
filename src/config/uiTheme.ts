@@ -1,0 +1,18 @@
+export const UI_THEME = {
+  parchment: "#f4ecd9",
+  parchmentWarm: "#eadfc6",
+  ivory: "#fbf6ea",
+  sand: "#d7c39e",
+  goldDust: "#c9b178",
+  red: "#a2332c",
+  redDark: "#7f211d",
+  redSoft: "#c75d4a",
+  ink: "#3e241d",
+  inkSoft: "#6b4b42",
+  border: "#bda37d",
+  shadow: "#5b2b26",
+  hudBg: "rgba(122, 33, 29, 0.9)",
+  hudBorder: "rgba(255, 244, 226, 0.24)",
+  hudText: "#fff3e1",
+  hudLabel: "#efcfab",
+} as const;

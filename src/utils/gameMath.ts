@@ -28,7 +28,7 @@ export function createObstacle(id: number, lane: number, type: ObstacleType): Ob
   const initialY =
     type === "car"
       ? -Math.round(preset.height + 220)
-      : type === "pit" || type === "manhole"
+      : type === "pit" || type === "manhole" || type === "bomj"
         ? -Math.round(preset.height + 320)
         : -Math.round(preset.height + 160);
 
@@ -49,11 +49,15 @@ export function getRandomObstacleType(): ObstacleType {
     return "car";
   }
 
-  if (roll < 0.45) {
+  if (roll < 0.4) {
     return "pit";
   }
 
-  if (roll < 0.68) {
+  if (roll < 0.58) {
+    return "bomj";
+  }
+
+  if (roll < 0.76) {
     return "manhole";
   }
 
@@ -75,6 +79,8 @@ export function checkCollision(
     const hitboxInset =
       obstacle.type === "pit" || obstacle.type === "manhole"
         ? { horizontal: 1, top: 2, bottom: 1 }
+        : obstacle.type === "bomj"
+          ? { horizontal: 6, top: 4, bottom: 4 }
         : obstacle.type === "car"
           ? { horizontal: 6, top: 6, bottom: 6 }
           : { horizontal: 6, top: 6, bottom: 6 };

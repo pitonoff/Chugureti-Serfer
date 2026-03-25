@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { UI_THEME } from "../config/uiTheme";
 import { GameButton } from "./GameButton";
 
 type GameOverScreenProps = {
@@ -53,7 +54,7 @@ export function GameOverScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0cd9e",
+    backgroundColor: UI_THEME.parchment,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 180,
-    backgroundColor: "#d98863",
+    backgroundColor: UI_THEME.red,
   },
   bottomBand: {
     position: "absolute",
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 220,
-    backgroundColor: "#e5c39c",
+    backgroundColor: UI_THEME.parchmentWarm,
   },
   backgroundGlow: {
     position: "absolute",
@@ -80,18 +81,18 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 999,
-    backgroundColor: "rgba(255, 224, 186, 0.28)",
+    backgroundColor: "rgba(201, 177, 120, 0.2)",
   },
   card: {
     width: "100%",
     maxWidth: 420,
-    backgroundColor: "#fbefdf",
+    backgroundColor: UI_THEME.ivory,
     borderWidth: 1,
-    borderColor: "#d8b08b",
+    borderColor: UI_THEME.border,
     borderRadius: 32,
     paddingHorizontal: 24,
     paddingVertical: 32,
-    shadowColor: "#744c34",
+    shadowColor: UI_THEME.shadow,
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.18,
     shadowRadius: 24,
@@ -100,47 +101,52 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#b55f3f",
+    color: UI_THEME.red,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     marginBottom: 10,
+    textAlign: "center",
   },
   title: {
     fontSize: 38,
     fontWeight: "900",
-    color: "#4f2b1d",
+    color: UI_THEME.redDark,
     marginBottom: 10,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
     lineHeight: 24,
-    color: "#7a5a45",
+    color: UI_THEME.inkSoft,
     marginBottom: 24,
+    textAlign: "center",
   },
   statsRow: {
     flexDirection: "row",
     gap: 14,
     marginBottom: 26,
+    alignItems: "stretch",
   },
   statCard: {
     flex: 1,
-    backgroundColor: "#f3e1ca",
+    backgroundColor: "#efe4cf",
     borderWidth: 1,
-    borderColor: "#e2c5a6",
+    borderColor: UI_THEME.border,
     borderRadius: 20,
     padding: 18,
   },
   statLabel: {
     fontSize: 14,
-    color: "#8b7058",
+    color: UI_THEME.inkSoft,
     marginBottom: 8,
   },
   statValue: {
     fontSize: 30,
     fontWeight: "800",
-    color: "#4f2b1d",
+    color: UI_THEME.redDark,
   },
   buttons: {
     gap: 12,
+    alignItems: "stretch",
   },
 });
