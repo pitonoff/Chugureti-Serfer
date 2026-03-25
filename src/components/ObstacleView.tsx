@@ -1,7 +1,10 @@
 import { memo } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { BOMJ_FRAME_SOURCES } from "../config/bomjFrames";
-import { GOP_FRAME_SOURCES } from "../config/gopFrames";
+import {
+  BOMJ_FRAME_COUNT,
+  BOMJ_FRAME_SHEET_SOURCE,
+} from "../config/bomjFrames";
+import { GOP_FRAME_COUNT, GOP_FRAME_SHEET_SOURCE } from "../config/gopFrames";
 import { Obstacle } from "../types/game";
 import { getLaneLeftX } from "../utils/gameMath";
 
@@ -42,20 +45,40 @@ export const ObstacleView = memo(function ObstacleView({
         />
       ) : null}
       {obstacle.type === "pit" ? (
-        <Image
-          source={GOP_FRAME_SOURCES[pitAnimationFrame]}
-          style={styles.pitSprite}
-          resizeMode="contain"
-          fadeDuration={0}
-        />
+        <View style={styles.spriteViewport}>
+          <Image
+            source={GOP_FRAME_SHEET_SOURCE}
+            style={[
+              styles.pitSpriteSheet,
+              {
+                width: obstacle.width * GOP_FRAME_COUNT,
+                height: obstacle.height,
+                transform: [{ translateX: -pitAnimationFrame * obstacle.width }],
+              },
+            ]}
+            resizeMode="stretch"
+            fadeDuration={0}
+          />
+        </View>
       ) : null}
       {obstacle.type === "bomj" ? (
-        <Image
-          source={BOMJ_FRAME_SOURCES[bomjAnimationFrame]}
-          style={styles.bomjSprite}
-          resizeMode="contain"
-          fadeDuration={0}
-        />
+        <View style={styles.spriteViewport}>
+          <Image
+            source={BOMJ_FRAME_SHEET_SOURCE}
+            style={[
+              styles.bomjSpriteSheet,
+              {
+                width: obstacle.width * BOMJ_FRAME_COUNT,
+                height: obstacle.height,
+                transform: [
+                  { translateX: -bomjAnimationFrame * obstacle.width },
+                ],
+              },
+            ]}
+            resizeMode="stretch"
+            fadeDuration={0}
+          />
+        </View>
       ) : null}
       {obstacle.type === "manhole" ? (
         <Image
@@ -83,6 +106,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  spriteViewport: {
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+  },
   poop: {
     backgroundColor: "transparent",
   },
@@ -97,6 +125,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  pitSpriteSheet: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+  },
   manhole: {
     backgroundColor: "transparent",
   },
@@ -110,6 +143,11 @@ const styles = StyleSheet.create({
   bomjSprite: {
     width: "100%",
     height: "100%",
+  },
+  bomjSpriteSheet: {
+    position: "absolute",
+    left: 0,
+    top: 0,
   },
   car: {
     backgroundColor: "transparent",

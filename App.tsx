@@ -3,9 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import { GameOverScreen } from "./src/components/GameOverScreen";
 import { GameScreen } from "./src/components/GameScreen";
-import { BOMJ_FRAME_SOURCES } from "./src/config/bomjFrames";
-import { GOP_FRAME_SOURCES } from "./src/config/gopFrames";
-import { PLAYER_FRAME_SOURCES } from "./src/config/playerFrames";
+import { BOMJ_FRAME_SHEET_SOURCE } from "./src/config/bomjFrames";
+import { GOP_FRAME_SHEET_SOURCE } from "./src/config/gopFrames";
+import { PLAYER_FRAME_SHEET_SOURCE } from "./src/config/playerFrames";
 import { StartScreen } from "./src/components/StartScreen";
 import { UI_THEME } from "./src/config/uiTheme";
 import { useTelegramMiniApp } from "./src/hooks/useTelegramMiniApp";
@@ -25,9 +25,9 @@ export default function App() {
     let isMounted = true;
 
     Asset.loadAsync([
-      ...PLAYER_FRAME_SOURCES,
-      ...BOMJ_FRAME_SOURCES,
-      ...GOP_FRAME_SOURCES,
+      PLAYER_FRAME_SHEET_SOURCE,
+      BOMJ_FRAME_SHEET_SOURCE,
+      GOP_FRAME_SHEET_SOURCE,
       require("./assets/ui/col-transparent-web.png"),
       require("./assets/prius-top-cropped-web.png"),
       require("./assets/kal-prepped-web.png"),

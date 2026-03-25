@@ -11,8 +11,8 @@ import {
   PLAYER_Y,
   ROAD_LAYOUT,
 } from "../config/gameConfig";
-import { BOMJ_FRAME_INTERVAL_MS, BOMJ_FRAME_SOURCES } from "../config/bomjFrames";
-import { GOP_FRAME_INTERVAL_MS, GOP_FRAME_SOURCES } from "../config/gopFrames";
+import { BOMJ_FRAME_COUNT, BOMJ_FRAME_INTERVAL_MS } from "../config/bomjFrames";
+import { GOP_FRAME_COUNT, GOP_FRAME_INTERVAL_MS } from "../config/gopFrames";
 import { UI_THEME } from "../config/uiTheme";
 import { useGameLoop } from "../hooks/useGameLoop";
 import { Obstacle } from "../types/game";
@@ -518,8 +518,14 @@ export function GameScreen({ onGameOver }: GameScreenProps) {
           <ObstacleView
             key={obstacle.id}
             obstacle={obstacle}
-            pitAnimationFrame={Math.floor((elapsed * 1000) / GOP_FRAME_INTERVAL_MS) % GOP_FRAME_SOURCES.length}
-            bomjAnimationFrame={Math.floor((elapsed * 1000) / BOMJ_FRAME_INTERVAL_MS) % BOMJ_FRAME_SOURCES.length}
+            pitAnimationFrame={
+              Math.floor((elapsed * 1000) / GOP_FRAME_INTERVAL_MS) %
+              GOP_FRAME_COUNT
+            }
+            bomjAnimationFrame={
+              Math.floor((elapsed * 1000) / BOMJ_FRAME_INTERVAL_MS) %
+              BOMJ_FRAME_COUNT
+            }
           />
         ))}
         <Animated.View
