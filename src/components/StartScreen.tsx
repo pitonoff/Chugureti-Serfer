@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { UI_THEME } from "../config/uiTheme";
 import { GameButton } from "./GameButton";
 
@@ -20,11 +20,7 @@ export function StartScreen({
       <View style={styles.backgroundGlow} />
       <View style={styles.crossVertical} />
       <View style={styles.crossHorizontal} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-      >
+      <View style={styles.content}>
         <View style={styles.card}>
           <Text style={styles.eyebrow}>Endless runner</Text>
           <View style={styles.logoFrame}>
@@ -36,8 +32,7 @@ export function StartScreen({
             />
           </View>
           <Text style={styles.subtitle}>
-            Беги по улице, меняй полосу, уклоняйся от Prius, люков, ям и прочих
-            городских сюрпризов.
+            Беги по улице, меняй полосу и уворачивайся от городских сюрпризов.
           </Text>
 
           <View style={styles.rules}>
@@ -63,7 +58,7 @@ export function StartScreen({
             disabled={isPreparing}
           />
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -73,20 +68,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: UI_THEME.parchment,
   },
-  scrollContent: {
-    flexGrow: 1,
+  content: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 28,
+    paddingTop: 14,
+    paddingBottom: 18,
   },
   topBand: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    height: 180,
+    height: 160,
     backgroundColor: UI_THEME.red,
   },
   bottomBand: {
@@ -94,14 +89,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 220,
+    height: 180,
     backgroundColor: UI_THEME.parchmentWarm,
   },
   backgroundGlow: {
     position: "absolute",
-    top: 58,
-    width: 320,
-    height: 320,
+    top: 52,
+    width: 280,
+    height: 280,
     borderRadius: 999,
     backgroundColor: "rgba(201, 177, 120, 0.24)",
   },
@@ -131,8 +126,8 @@ const styles = StyleSheet.create({
     backgroundColor: UI_THEME.ivory,
     borderWidth: 1,
     borderColor: UI_THEME.border,
-    paddingHorizontal: 24,
-    paddingVertical: 28,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
     shadowColor: UI_THEME.shadow,
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.18,
@@ -140,51 +135,50 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   eyebrow: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
     color: UI_THEME.red,
     textTransform: "uppercase",
     letterSpacing: 0.8,
-    marginBottom: 12,
+    marginBottom: 8,
     textAlign: "center",
   },
   logoFrame: {
     width: "100%",
-    height: 164,
+    height: 118,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 10,
   },
   logo: {
-    width: "92%",
-    height: "92%",
+    width: "84%",
+    height: "84%",
   },
   subtitle: {
-    fontSize: 17,
-    lineHeight: 25,
+    fontSize: 15,
+    lineHeight: 21,
     color: UI_THEME.inkSoft,
-    marginBottom: 18,
+    marginBottom: 14,
     textAlign: "center",
   },
   rules: {
-    gap: 10,
-    marginBottom: 20,
+    gap: 8,
+    marginBottom: 14,
   },
   rule: {
-    fontSize: 16,
+    fontSize: 14,
     color: UI_THEME.ink,
     backgroundColor: "#efe4cf",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: UI_THEME.border,
   },
   statsPanel: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   bestScoreCard: {
     flexGrow: 1,
@@ -193,22 +187,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#efe4cf",
     borderWidth: 1,
     borderColor: UI_THEME.border,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     alignItems: "center",
   },
   bestScoreLabel: {
-    fontSize: 15,
+    fontSize: 13,
     color: UI_THEME.inkSoft,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   bestScoreValue: {
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: "800",
     color: UI_THEME.redDark,
   },
   modeValue: {
-    fontSize: 22,
+    fontSize: 19,
     fontWeight: "800",
     color: UI_THEME.redDark,
   },
