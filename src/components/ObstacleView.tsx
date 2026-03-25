@@ -35,9 +35,10 @@ export const ObstacleView = memo(function ObstacleView({
     >
       {obstacle.type === "poop" ? (
         <Image
-          source={require("../../assets/kal-prepped.png")}
+          source={require("../../assets/kal-prepped-web.png")}
           style={styles.poopSprite}
           resizeMode="contain"
+          fadeDuration={0}
         />
       ) : null}
       {obstacle.type === "pit" ? (
@@ -45,6 +46,7 @@ export const ObstacleView = memo(function ObstacleView({
           source={GOP_FRAME_SOURCES[pitAnimationFrame]}
           style={styles.pitSprite}
           resizeMode="contain"
+          fadeDuration={0}
         />
       ) : null}
       {obstacle.type === "bomj" ? (
@@ -52,20 +54,23 @@ export const ObstacleView = memo(function ObstacleView({
           source={BOMJ_FRAME_SOURCES[bomjAnimationFrame]}
           style={styles.bomjSprite}
           resizeMode="contain"
+          fadeDuration={0}
         />
       ) : null}
       {obstacle.type === "manhole" ? (
         <Image
-          source={require("../../assets/kolo-new-prepped.png")}
+          source={require("../../assets/kolo-new-prepped-web.png")}
           style={styles.manholeSprite}
           resizeMode="contain"
+          fadeDuration={0}
         />
       ) : null}
       {obstacle.type === "car" ? (
         <Image
-          source={require("../../assets/prius-top-cropped.png")}
+          source={require("../../assets/prius-top-cropped-web.png")}
           style={styles.carSprite}
           resizeMode="contain"
+          fadeDuration={0}
         />
       ) : null}
     </View>

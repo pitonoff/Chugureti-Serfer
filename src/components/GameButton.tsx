@@ -4,27 +4,32 @@ import { UI_THEME } from "../config/uiTheme";
 type GameButtonProps = {
   label: string;
   onPress: () => void;
+  disabled?: boolean;
   variant?: "primary" | "secondary";
 };
 
 export function GameButton({
   label,
+  disabled = false,
   onPress,
   variant = "primary",
 }: GameButtonProps) {
   return (
     <Pressable
+      disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
         variant === "primary" ? styles.primary : styles.secondary,
-        pressed && styles.buttonPressed,
+        disabled && styles.buttonDisabled,
+        pressed && !disabled && styles.buttonPressed,
       ]}
     >
       <Text
         style={[
           styles.label,
           variant === "primary" ? styles.primaryLabel : styles.secondaryLabel,
+          disabled && styles.disabledLabel,
         ]}
       >
         {label}
@@ -61,6 +66,9 @@ const styles = StyleSheet.create({
   buttonPressed: {
     transform: [{ scale: 0.98 }],
   },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
   label: {
     fontSize: 17,
     fontWeight: "700",
@@ -70,5 +78,8 @@ const styles = StyleSheet.create({
   },
   secondaryLabel: {
     color: UI_THEME.redDark,
+  },
+  disabledLabel: {
+    color: "rgba(250, 247, 240, 0.9)",
   },
 });

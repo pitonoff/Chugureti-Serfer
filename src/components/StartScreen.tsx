@@ -4,10 +4,15 @@ import { GameButton } from "./GameButton";
 
 type StartScreenProps = {
   bestScore: number;
+  isPreparing: boolean;
   onPlay: () => void;
 };
 
-export function StartScreen({ bestScore, onPlay }: StartScreenProps) {
+export function StartScreen({
+  bestScore,
+  isPreparing,
+  onPlay,
+}: StartScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.topBand} />
@@ -19,9 +24,10 @@ export function StartScreen({ bestScore, onPlay }: StartScreenProps) {
         <Text style={styles.eyebrow}>Endless runner</Text>
         <View style={styles.logoFrame}>
           <Image
-            source={require("../../assets/logo-transparent.png")}
+            source={require("../../assets/logo-transparent-web.png")}
             style={styles.logo}
             resizeMode="contain"
+            fadeDuration={0}
           />
         </View>
         <Text style={styles.subtitle}>
@@ -46,7 +52,11 @@ export function StartScreen({ bestScore, onPlay }: StartScreenProps) {
           </View>
         </View>
 
-        <GameButton label="Play" onPress={onPlay} />
+        <GameButton
+          label={isPreparing ? "Подгружаем мир..." : "Play"}
+          onPress={onPlay}
+          disabled={isPreparing}
+        />
       </View>
     </View>
   );

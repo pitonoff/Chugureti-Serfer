@@ -31,7 +31,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         <Image
           source={
             isColliding
-              ? require("../../assets/ui/col-transparent.png")
+              ? require("../../assets/ui/col-transparent-web.png")
               : PLAYER_FRAME_SOURCES[frameIndex]
           }
           style={[styles.sprite, isColliding && styles.collisionSprite]}
